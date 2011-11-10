@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript">
+
+function gbi(val){
+	return document.getElementById(val);
+}
+var num2coin = {
+	client: new XMLHttpRequest(),
+	coins: {'25':'quarters','10':'dimes','5':'nickels','1':'pennies'},
+	fillCoins: function(data){
+		if(data){
+			data = eval('(' + data + ')');
+			for(coin in this.coins){
+				var text = 0;
+				if(data[coin]){
+					text = data[coin];      
+				}
+				gbi(this.coins[coin]).innerHTML = text;
+			}               
+		}
+	},
+	handler: function() {
+		if(this.readyState == 4 && this.status == 200){
+			num2coin.fillCoins(this.responseText);
+		}
+	},
+	getCoins: function(val){
+		this.client.onreadystatechange = this.handler;
+		this.client.open('GET', '/coins.php?num='+val);
+		this.client.send();
+	}
+}
+
+function pressed(event) {
+	num2coin.getCoins(gbi('num').value);
+}
+/*
+var client = new XMLHttpRequest();
+var coins = {'25':'quarters','10':'dimes','5':'nickels','1':'pennies'};
+
+function fillCoins(data){
+	if(data){
+		data = eval('(' + data + ')');
+		for(coin in coins){
+			var text = 0;
+			if(data[coin]){
+				text = data[coin];	
+			}
+			gbi(coins[coin]).innerHTML = text;
+		}		
+	}
+}
+function handler(){
+	if(this.readyState == 4 && this.status == 200){
+		fillCoins(this.responseText);
+	}
+}
+function getCoins(val){
+	client.onreadystatechange = handler;
+	client.open('GET', '/coins.php?num='+val);
+	client.send();
+}
+
+function pressed(event){
+	getCoins(gbi('num').value);
+}
+
+*/
+
+
+</script>
+</head>
+<body>
+	<h1>Coins!</h1>
+	Quarters: <span id="quarters">0</span><br/>
+	Dimes: <span id="dimes">0</span><br/>
+	Nickels: <span id="nickels">0</span><br/>
+	Pennies: <span id="pennies">0</span><br/>
+
+	<h1>What's Your Number?</h1>
+	<input id="num" type="text" value="" onKeyUp="pressed(event)" />
+</body>
+</html>
